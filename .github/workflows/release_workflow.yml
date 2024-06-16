@@ -1,0 +1,39 @@
+---
+name : Release_workflow
+on:
+  push:
+    tags:
+    - '*.*.*'
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+jobs:
+  release_go:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: 1.21
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+
+  build_and_push_img:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: docker/login-action@v3
+          with:
+            username: "${{secrets.DOCKERHUB_USERNAME}}"
+            password: "${{secrets.DOCKERHUB_TOKEN}}"
+        - uses: docker/build-push-action@v5
+          with:
+            push: true
+            tags: "${{secrets.DOCKERHUB_USERNAME}}/supercalculator:${{ github.ref_name }}"
