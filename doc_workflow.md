@@ -311,3 +311,4 @@ jobs:
 ![Untitled](images_doc/capture9.png)
 
 **Bonus :**
+on va installer codeQL depuis la plateforme de github
